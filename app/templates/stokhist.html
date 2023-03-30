@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tokopedia Stok History</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Item ID</th>
+            <th>WH ID</th>
+            <th>Stock</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in df %}
+        <tr>
+            <td>{{i.item_id}}</td>
+            <td>{{i.wh_id}}</td>
+            <td>{{i.item_qty}}</td>
+            <td>{{i.stok_date}}</td>
+            <td><a href="{{url_for('delstokhist',id=i.id)}}">delete</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+
+{% endblock %}
+
+

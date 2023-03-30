@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tokopedia Product</h2>
+
+<form method="POST" class="formProd">
+    <label for="InpWhId" class="form-label">Product ID</label>
+    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpProdId" name="InpProdId" required>
+    <!-- <label for="InpProdName" class="form-label">Product Name</label>
+    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpProdName" name="InpProdName" required> -->
+    <input type="submit" name="action" value="Add Product" class="btn btn-primary mb-3">
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <!-- <th>ID</th> -->
+            <th>Product ID</th>
+            <!-- <th>Product Name</th> -->
+            <th>Product Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in df %}
+        <tr>
+            <!-- <td>{{i.id}}</td> -->
+            <td>{{i.product_id}}</td>
+            <!-- <td>{{i.product_id}}</td> -->
+            <td>{{i.product_status}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+

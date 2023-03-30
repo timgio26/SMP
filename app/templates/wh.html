@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tokopedia Warehouse</h2>
+
+<form method="POST" class="formWh">
+    <label for="InpWhId" class="form-label">WH ID</label>
+    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhId" name="InpWhId" required>
+    <label for="InpWhName" class="form-label">WH Name</label>
+    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhName" name="InpWhName" required>
+    <input type="submit" name="action" value="Add WH" class="btn btn-primary mb-3">
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <!-- <th>ID</th> -->
+            <th>WH ID</th>
+            <th>WH Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in df %}
+        <tr>
+            <!-- <td>{{i.id}}</td> -->
+            <td>{{i.warehouse_id}}</td>
+            <td>{{i.warehouse_name}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+  
+{% endblock %}
+
+
