@@ -9,19 +9,29 @@ import json
 
 class apiv1(Resource):
     def post(self):
-        id=request.args.get('id')
-        qty=request.args.get('qty')
-        wh=request.args.get('wh')
-        print(id)
-        print(qty)
-        newdata=Stok(item_id=id,item_qty=qty,stok_date=date.today(),wh_id=wh)
-        db.session.add(newdata)
-        db.session.commit()
-        return {'status':'added stok'}
+        if request.args.get('data')=="token":
+            if request.args.get('secretkey')==app.config['SECRET_KEY']:
+                cred=Credential.query.get(1)
+                cred.clientBearer=request.args.get('newtoken')
+                db.session.add(cred)
+                db.session.commit()
+                return {'status':'token updated'}
+            else:
+                return {'status':'wrong secret key'}
+        else:
+            id=request.args.get('id')
+            qty=request.args.get('qty')
+            wh=request.args.get('wh')
+            print(id)
+            print(qty)
+            newdata=Stok(item_id=id,item_qty=qty,stok_date=date.today(),wh_id=wh)
+            db.session.add(newdata)
+            db.session.commit()
+            return {'status':'added stok'}
     def get(self):
         if request.args.get('data')=="product":
             engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-            df = pd.read_sql_query("SELECT * FROM Product", con=engine)
+            df = pd.read_sql_query("SELECT * FROM product", con=engine)
             engine.dispose()
             df=df.to_json(orient='records')
             df=json.loads(df)
@@ -29,7 +39,7 @@ class apiv1(Resource):
         elif (request.args.get('data')=="credentials"):
             if request.args.get('secretkey')==app.config['SECRET_KEY']:
                 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-                df = pd.read_sql_query("SELECT * FROM Credential", con=engine)
+                df = pd.read_sql_query("SELECT * FROM credential", con=engine)
                 engine.dispose()
                 df=df.to_json(orient='records')
                 df=json.loads(df)
@@ -38,7 +48,7 @@ class apiv1(Resource):
                 return {'status':'wrong secret key'}
         else:
             engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-            df = pd.read_sql_query("SELECT * FROM Warehouse", con=engine)
+            df = pd.read_sql_query("SELECT * FROM warehouse", con=engine)
             engine.dispose()
             df=df.to_json(orient='records')
             df=json.loads(df)

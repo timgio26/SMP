@@ -1,5 +1,5 @@
 venv/
 __pycache__/
 *sqlite
-migrations/
+migrations/ 
 config.py
