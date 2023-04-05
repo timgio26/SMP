@@ -6,6 +6,7 @@ from flask_restful import Resource
 from sqlalchemy import create_engine
 import pandas as pd
 import json
+import requests
 
 class apiv1(Resource):
     def post(self):
@@ -35,7 +36,7 @@ class apiv1(Resource):
             engine.dispose()
             df=df.to_json(orient='records')
             df=json.loads(df)
-            return df
+            return (df)
         elif (request.args.get('data')=="credentials"):
             if request.args.get('secretkey')==app.config['SECRET_KEY']:
                 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -43,36 +44,38 @@ class apiv1(Resource):
                 engine.dispose()
                 df=df.to_json(orient='records')
                 df=json.loads(df)
-                return df
+                return (df)
             else:
                 return {'status':'wrong secret key'}
         else:
-            engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-            df = pd.read_sql_query("SELECT * FROM warehouse", con=engine)
-            engine.dispose()
-            df=df.to_json(orient='records')
-            df=json.loads(df)
-            return df
+            print(request.args.get('id'))
+            if request.args.get('id'):
+                df=Warehouse.query.filter_by(warehouse_id=request.args.get('id')).first()
+                return {'whname':df.warehouse_name}
+            else:
+                engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+                df = pd.read_sql_query("SELECT * FROM warehouse", con=engine)
+                engine.dispose()
+                df=df.to_json(orient='records')
+                df=json.loads(df)
+                return (df)
         
 api.add_resource(apiv1,'/apiv1')
 
-
 @app.route('/')
 def index():
-    df=Stok.query.filter_by(item_id="2105777071").all()
+    return redirect(url_for('stokhist'))
+
+@app.route('/<id>')
+def dash(id):
+    df=Stok.query.filter_by(item_id=id).all()
     wh=[x.wh_id for x in df]
     whnew=list(set(wh))
-    print(len(whnew))
-    # for wh in whnew:
     x=[x.stok_date.strftime('%Y/%m/%d') for x in df]
     xnew=list(set(x))
     xnew.sort()
-    print(xnew)
-    
+    # y=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
     y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
-    
-    # y=[x.item_qty for x in df]
-    
     return render_template('dash.html',x=xnew,y=y)
 
 @app.route('/stokhist')

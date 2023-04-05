@@ -20,7 +20,9 @@
             <td>{{i.wh_id}}</td>
             <td>{{i.item_qty}}</td>
             <td>{{i.stok_date}}</td>
-            <td><a href="{{url_for('delstokhist',id=i.id)}}">delete</a></td>
+            <td>
+                <a href="{{url_for('delstokhist',id=i.id)}}">delete</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
