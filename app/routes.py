@@ -50,8 +50,12 @@ class apiv1(Resource):
         else:
             print(request.args.get('id'))
             if request.args.get('id'):
-                df=Warehouse.query.filter_by(warehouse_id=request.args.get('id')).first()
-                return {'whname':df.warehouse_name}
+                engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+                df = pd.read_sql_query("SELECT * FROM warehouse WHERE warehouse_id = {}".format(request.args.get('id')), con=engine)
+                engine.dispose()
+                df=df.to_json(orient='records')
+                df=json.loads(df)
+                return (df[0]['warehouse_name'])
             else:
                 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
                 df = pd.read_sql_query("SELECT * FROM warehouse", con=engine)
@@ -74,8 +78,10 @@ def dash(id):
     x=[x.stok_date.strftime('%Y/%m/%d') for x in df]
     xnew=list(set(x))
     xnew.sort()
-    # y=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
-    y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
+    # print(whnew)
+    # print([{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew])
+    # y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
+    y=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
     return render_template('dash.html',x=xnew,y=y)
 
 @app.route('/stokhist')
@@ -100,6 +106,13 @@ def wh():
         return redirect(url_for('wh'))
     else:        
         return render_template('wh.html',df=df)
+    
+@app.route('/delwh/<id>', methods=['GET', 'POST'])
+def delwh(id):
+    itemdel=Warehouse.query.get(id)
+    db.session.delete(itemdel)
+    db.session.commit()
+    return redirect(url_for('wh'))
     
 @app.route('/product', methods=['GET', 'POST'])
 def prod():

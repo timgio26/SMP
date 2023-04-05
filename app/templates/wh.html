@@ -17,6 +17,7 @@
             <!-- <th>ID</th> -->
             <th>WH ID</th>
             <th>WH Name</th>
+            <th>action</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +26,8 @@
             <!-- <td>{{i.id}}</td> -->
             <td>{{i.warehouse_id}}</td>
             <td>{{i.warehouse_name}}</td>
+            <td><a href="{{url_for('delwh',id=i.id)}}">delete</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
