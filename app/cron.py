@@ -13,6 +13,11 @@ def getprod():
     prodlist=[int(x['product_id']) for x in prod.json()]
     return(prodlist)
 
+def getnoneprod():
+    prod = requests.get("{0}/apiv1?data=product".format(config.envurl))
+    prodlist=[int(x['product_id']) for x in prod.json() if x['product_name']==None]
+    return(prodlist)
+
 def getwh():
     wh = requests.get("{}/apiv1".format(config.envurl))
     whlist=[int(x['warehouse_id']) for x in wh.json()]
@@ -20,6 +25,10 @@ def getwh():
 
 def addstok(prodid,stokval,whid):
     r = requests.post("{0}/apiv1?id={1}&qty={2}&wh={3}".format(config.envurl,prodid,stokval,whid))
+    return(r.json())
+
+def addnama(prodid,prodname):
+    r = requests.post("{0}/apiv1?data=prod&id={1}&prodname={2}".format(config.envurl,prodid,prodname))
     return(r.json())
 
 def newtoken(newtoken):
@@ -49,6 +58,25 @@ def getprodinfo(fs_id,itemid,token):
     return(r.json())
 
 cred=getcred()
+for itemid in getnoneprod():
+    prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])
+    if 'message' in prodinfo.keys():
+        if prodinfo['message']=='invalid_token':
+            tokenbaru=gettoken(id=cred['clientId'],secret=cred['clientSecret'])
+            newtoken(newtoken=tokenbaru)
+        elif prodinfo['message']=='unauthorized_ip_address':
+            currentip=requests.get("https://api.ipify.org?format=json").json()["ip"]
+            print('please register IP: {}'.format(currentip))
+            break
+        else:
+            print('check error msg')
+            break
+        cred=getcred()
+        prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])
+    nama=prodinfo['data'][0]['basic']['name']
+    print(nama)
+    addnama(prodid=itemid,prodname=nama)
+
 wh=getwh()
 for itemid in getprod():
     print("=====================")

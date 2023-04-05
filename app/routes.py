@@ -19,6 +19,14 @@ class apiv1(Resource):
                 return {'status':'token updated'}
             else:
                 return {'status':'wrong secret key'}
+        elif request.args.get('data')=="prod":
+            print(request.args.get('id'))
+            prod=Product.query.filter_by(product_id=request.args.get('id')).first()
+            print(prod.id)
+            prod.product_name=request.args.get('prodname')
+            db.session.add(prod)
+            db.session.commit()
+            return {'status':'prod name added'}
         else:
             id=request.args.get('id')
             qty=request.args.get('qty')
