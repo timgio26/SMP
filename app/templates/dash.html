@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tokopedia Stok Chart</h2>
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+<script type="text/javascript" src="{{ url_for('static', filename='scriptMSE.js') }}"></script>
+<script>
+    myFunction(x='{{x|tojson}}',p2='{{y|tojson}}');
+</script>
+
+{% endblock %}
+
+

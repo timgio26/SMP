@@ -59,7 +59,21 @@ api.add_resource(apiv1,'/apiv1')
 
 @app.route('/')
 def index():
-    return render_template('base.html')
+    df=Stok.query.filter_by(item_id="2105777071").all()
+    wh=[x.wh_id for x in df]
+    whnew=list(set(wh))
+    print(len(whnew))
+    # for wh in whnew:
+    x=[x.stok_date.strftime('%Y/%m/%d') for x in df]
+    xnew=list(set(x))
+    xnew.sort()
+    print(xnew)
+    
+    y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
+    
+    # y=[x.item_qty for x in df]
+    
+    return render_template('dash.html',x=xnew,y=y)
 
 @app.route('/stokhist')
 def stokhist():

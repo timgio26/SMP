@@ -1,20 +1,15 @@
-const ctx = document.getElementById('myChart');
-  
-new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [{
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
-      borderWidth: 1
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
+function myFunction(x,p2) 
+{
+  console.log(typeof p2);
+
+  const ctx = document.getElementById('myChart');
+
+  const data = 
+  {
+    labels: JSON.parse(x),
+    datasets: JSON.parse(p2)
+  };
+
+  const config = {type: 'line',data: data};
+  new Chart(ctx, config);
+}
