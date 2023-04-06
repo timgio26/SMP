@@ -3,12 +3,12 @@
 
 <h2>Tokopedia Stok Chart</h2>
 
-<div>
+<div class="chartjs">
     <canvas id="myChart"></canvas>
 </div>
 <script type="text/javascript" src="{{ url_for('static', filename='scriptMSE.js') }}"></script>
 <script>
-    myFunction(x='{{x|tojson}}',p2='{{y|tojson}}');
+    myFunction(p2='{{p2|tojson}}');
 </script>
 
 {% endblock %}
