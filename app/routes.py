@@ -81,6 +81,7 @@ def index():
 @app.route('/<id>')
 def dash(id):
     df=Stok.query.filter_by(item_id=id).all()
+    name=request.args.get('name')
     wh=[x.wh_id for x in df]
     whnew=list(set(wh))
     # x=[x.stok_date.strftime('%Y/%m/%d') for x in df]
@@ -89,8 +90,9 @@ def dash(id):
     # print(whnew)
     # print([{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew])
     # y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
-    p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty}  for i in df if i.wh_id==wh]} for wh in whnew]
-    return render_template('dash.html',p2=p2)
+    p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty} for i in df if i.wh_id==wh]} for wh in whnew]
+    print(p2)
+    return render_template('dash.html',p2=p2,name=name)
 
 @app.route('/stokhist')
 def stokhist():

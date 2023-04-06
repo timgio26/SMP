@@ -28,7 +28,7 @@
             <td>{{i.product_id}}</td>
             <td>{{i.product_name}}</td>
             <td>{{i.product_status}}</td>
-            <td><a href="{{url_for('dash',id=i.product_id)}}">chart</a></td>
+            <td><a href="{{url_for('dash',id=i.product_id,name=i.product_name)}}">chart</a></td>
         </tr>
         {% endfor %}
     </tbody>
