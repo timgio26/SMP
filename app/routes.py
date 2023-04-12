@@ -24,6 +24,8 @@ class apiv1(Resource):
             prod=Product.query.filter_by(product_id=request.args.get('id')).first()
             print(prod.id)
             prod.product_name=request.args.get('prodname')
+            if request.args.get('status'):
+                prod.product_status=request.args.get('status')
             db.session.add(prod)
             db.session.commit()
             return {'status':'prod name added'}
@@ -40,7 +42,7 @@ class apiv1(Resource):
     def get(self):
         if request.args.get('data')=="product":
             engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-            df = pd.read_sql_query("SELECT * FROM product", con=engine)
+            df = pd.read_sql_query("SELECT * FROM product WHERE product_status='Active'", con=engine)
             engine.dispose()
             df=df.to_json(orient='records')
             df=json.loads(df)
@@ -96,7 +98,9 @@ def dash(id):
 
 @app.route('/stokhist')
 def stokhist():
+    print(date.today())
     df=Stok.query.all()
+    # df=Stok.query.filter((Stok.stok_date==date.today())&(Stok.item_qty==0)).all()
     return render_template('stokhist.html',df=df)
 
 @app.route('/delstokhist/<id>')
@@ -135,6 +139,13 @@ def prod():
     else:        
         return render_template('product.html',df=df)
     
+@app.route('/delprod/<id>', methods=['GET', 'POST'])
+def delprod(id):
+    itemdel=Product.query.get(id)
+    db.session.delete(itemdel)
+    db.session.commit()
+    return redirect(url_for('prod'))
+
 @app.route('/cred', methods=['GET', 'POST'])
 def cred():
     df=Credential.query.get(1)

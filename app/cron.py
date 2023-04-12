@@ -27,8 +27,8 @@ def addstok(prodid,stokval,whid):
     r = requests.post("{0}/apiv1?id={1}&qty={2}&wh={3}".format(config.envurl,prodid,stokval,whid))
     return(r.json())
 
-def addnama(prodid,prodname):
-    r = requests.post("{0}/apiv1?data=prod&id={1}&prodname={2}".format(config.envurl,prodid,prodname))
+def addnama(prodid,prodname,status):
+    r = requests.post("{0}/apiv1?data=prod&id={1}&prodname={2}&status={3}".format(config.envurl,prodid,prodname,status))
     return(r.json())
 
 def newtoken(newtoken):
@@ -59,6 +59,8 @@ def getprodinfo(fs_id,itemid,token):
 
 cred=getcred()
 for itemid in getnoneprod():
+    print("=====================")
+    print(itemid)
     prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])
     if 'message' in prodinfo.keys():
         if prodinfo['message']=='invalid_token':
@@ -72,10 +74,17 @@ for itemid in getnoneprod():
             print('check error msg')
             break
         cred=getcred()
-        prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])
-    nama=prodinfo['data'][0]['basic']['name']
-    print(nama)
-    addnama(prodid=itemid,prodname=nama)
+        print(cred['appId'])
+        prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])      
+    if prodinfo['data'] is None:
+        print('id produk tdk ditemukan')
+        addnama(prodid=itemid,prodname="id produk tdk ditemukan",status='Inactive')
+    else:
+        nama=prodinfo['data'][0]['basic']['name']
+        print(nama)
+        addnama(prodid=itemid,prodname=nama)
+            
+        
 
 wh=getwh()
 for itemid in getprod():
