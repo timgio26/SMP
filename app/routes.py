@@ -78,7 +78,7 @@ api.add_resource(apiv1,'/apiv1')
 
 @app.route('/')
 def index():
-    return redirect(url_for('stokhist'))
+    return render_template('home.html')
 
 @app.route('/<id>')
 def dash(id):
@@ -101,7 +101,18 @@ def stokhist():
     print(date.today())
     df=Stok.query.all()
     # df=Stok.query.filter((Stok.stok_date==date.today())&(Stok.item_qty==0)).all()
-    return render_template('stokhist.html',df=df)
+    return render_template('stokhist.html',df=df,title="Tokopedia Stock History")
+
+@app.route('/oostoday')
+def oostoday():
+    if request.args.get('whid'):
+        df=Stok.query.filter((Stok.stok_date==date.today())&
+                             (Stok.item_qty==0)&
+                             (Stok.wh_id==request.args.get('whid'))).all()
+        return render_template('stokhist.html',df=df)
+    else:
+        df=Stok.query.filter((Stok.stok_date==date.today())&(Stok.item_qty==0)).all()
+        return render_template('stokhist.html',df=df,title="OOS Today")
 
 @app.route('/delstokhist/<id>')
 def delstokhist(id):

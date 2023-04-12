@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Tokopedia Stok Overview</h2>
+
+<ul>
+    <li><a href="{{url_for('oostoday')}}">OOS Today</a> </li>
+    <li>Low Stock</li>
+    <li>High Stock</li>
+    <li><a href="{{url_for('stokhist')}}">All Stock History</a> </li>
+</ul>
+
+
+{% endblock %}
+
+
