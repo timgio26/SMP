@@ -17,3 +17,8 @@
 .chartjs{
     width: 50%;
 }
+
+.hside{
+    text-align: end;
+    margin: 0px !important;
+}

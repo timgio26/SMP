@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2>Tokopedia Warehouse</h2>
 
-<form method="POST" class="formWh">
-    <label for="InpWhId" class="form-label">WH ID</label>
-    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhId" name="InpWhId" required>
-    <label for="InpWhName" class="form-label">WH Name</label>
-    <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhName" name="InpWhName" required>
-    <input type="submit" name="action" value="Add WH" class="btn btn-primary mb-3">
-</form>
+<div class="row">
+    <div class="col"> 
+        <h2>Tokopedia Warehouse</h2>
+    </div>
+    <div class="col hside"> 
+        <button type="button" class="btn btn-primary hside" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Add Warehouse
+        </button>
+    </div>
+</div>
+<br>
 
 <table class="table table-striped">
     <thead>
@@ -32,6 +35,24 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+            <form method="POST">
+                <label for="InpWhId" class="form-label">WH ID</label>
+                <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhId" name="InpWhId" required>
+                <label for="InpWhName" class="form-label">WH Name</label>
+                <input class="form-control" type="text" placeholder="" aria-label="default input example" id="InpWhName" name="InpWhName" required>
+                <input type="submit" name="action" value="Add WH" class="btn btn-primary mb-3">
+                <button type="button" class="btn btn-secondary mb-3" data-bs-dismiss="modal">Close</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   
 {% endblock %}
 
