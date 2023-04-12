@@ -28,8 +28,13 @@
             <td>{{i.product_id}}</td>
             <td>{{i.product_name}}</td>
             <td>{{i.product_status}}</td>
-            <td><a href="{{url_for('dash',id=i.product_id,name=i.product_name)}}">chart</a>
-            <a href="{{url_for('delprod',id=i.id)}}">delete</a></td>
+            <td>
+                {% if i.product_status=='Active' %}
+                <a href="{{url_for('dash',id=i.product_id,name=i.product_name)}}">chart</a>
+                {% else %}
+                <a href="{{url_for('delprod',id=i.id)}}">delete</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
