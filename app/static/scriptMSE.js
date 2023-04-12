@@ -20,3 +20,7 @@ function myFunction(p2)
   new Chart(ctx, config);
 
 }
+
+$(document).ready(function () {
+  $('#example').DataTable();
+});
