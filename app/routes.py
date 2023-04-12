@@ -24,8 +24,8 @@ class apiv1(Resource):
             prod=Product.query.filter_by(product_id=request.args.get('id')).first()
             print(prod.id)
             prod.product_name=request.args.get('prodname')
-            if request.args.get('status'):
-                prod.product_status=request.args.get('status')
+            # if request.args.get('status'):
+            prod.product_status=request.args.get('status')
             db.session.add(prod)
             db.session.commit()
             return {'status':'prod name added'}

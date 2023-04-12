@@ -27,7 +27,7 @@ def addstok(prodid,stokval,whid):
     r = requests.post("{0}/apiv1?id={1}&qty={2}&wh={3}".format(config.envurl,prodid,stokval,whid))
     return(r.json())
 
-def addnama(prodid,prodname,status):
+def addnama(prodid,prodname,status = "Active"):
     r = requests.post("{0}/apiv1?data=prod&id={1}&prodname={2}&status={3}".format(config.envurl,prodid,prodname,status))
     return(r.json())
 
