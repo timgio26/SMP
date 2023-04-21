@@ -95,16 +95,30 @@ def ydasales():
         print(i.item_id)
         print(i.wh_id)
         print(i.stok_date)
-        lastdata=db.session.query(Stok.item_qty,func.max(Stok.stok_date)).filter((Stok.item_id==i.item_id)&
-                                                                   (Stok.wh_id==i.wh_id)&
-                                                                   (Stok.stok_date<i.stok_date)).first()
-        print(lastdata)
-        if lastdata[0] is not None:
-            print('stok gerak')
-            val=int((i.item_qty-lastdata[0])/((i.stok_date-lastdata[1]).days))
+        # lastdata=db.session.query(Stok.item_qty,func.max(Stok.stok_date)).filter((Stok.item_id==i.item_id)&
+        #                                                            (Stok.wh_id==i.wh_id)&
+        #                                                            (Stok.stok_date<i.stok_date)).first()
+        lastdata=db.session.query(Stok).filter((Stok.item_id==i.item_id)&
+                                               (Stok.wh_id==i.wh_id)&
+                                               (Stok.stok_date<i.stok_date)).order_by(Stok.stok_date.desc()).first()
+
+        
+        if lastdata is not None:
+            print(lastdata.stok_date)
+            print(lastdata.item_qty)
+            val=int((i.item_qty-lastdata.item_qty)/((i.stok_date-lastdata.stok_date).days))
             i.out_yda=val
             db.session.add(i)
             db.session.commit()
+    return redirect(url_for('stokhist'))
+
+@app.route('/resetydasales')
+def resetydasales():
+    df=Stok.query.all()
+    for i in df:
+        i.out_yda=None
+        db.session.add(i)
+        db.session.commit()
     return redirect(url_for('stokhist'))
 
 @app.route('/<id>')
