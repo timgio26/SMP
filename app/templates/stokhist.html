@@ -9,6 +9,7 @@
             <th>Item ID</th>
             <th>WH ID</th>
             <th>Stock</th>
+            <th>Outbound vs Yda</th>
             <th>Date</th>
             <th>Action</th>
         </tr>
@@ -19,6 +20,7 @@
             <td>{{i.item_id}}</td>
             <td>{{i.wh_id}}</td>
             <td>{{i.item_qty}}</td>
+            <td>{{i.out_yda}}</td>
             <td>{{i.stok_date}}</td>
             <td>
                 <a href="{{url_for('delstokhist',id=i.id)}}">delete</a>

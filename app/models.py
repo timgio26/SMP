@@ -30,3 +30,4 @@ class Stok(db.Model):
     item_qty = db.Column(db.Integer)
     stok_date = db.Column(db.Date)
     wh_id = db.Column(db.String(25))
+    out_yda=db.Column(db.Integer)

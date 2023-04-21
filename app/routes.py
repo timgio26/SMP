@@ -3,7 +3,7 @@ from app import app,db,api
 from app.models import Warehouse,Product,Credential,Stok
 from datetime import date
 from flask_restful import Resource
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,func
 import pandas as pd
 import json
 import requests
@@ -57,6 +57,13 @@ class apiv1(Resource):
                 return (df)
             else:
                 return {'status':'wrong secret key'}
+        elif (request.args.get('data')=="stokhist"):
+            engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+            df = pd.read_sql_query("SELECT * FROM stok", con=engine)
+            engine.dispose()
+            df=df.to_json()
+            df=json.loads(df)
+            return(df)
         else:
             print(request.args.get('id'))
             if request.args.get('id'):
@@ -79,6 +86,26 @@ api.add_resource(apiv1,'/apiv1')
 @app.route('/')
 def index():
     return render_template('home.html')
+
+@app.route('/updateydasales')
+def ydasales():
+    df=Stok.query.filter_by(out_yda=None).all()
+    for i in df:
+        print("=========")
+        print(i.item_id)
+        print(i.wh_id)
+        print(i.stok_date)
+        lastdata=db.session.query(Stok.item_qty,func.max(Stok.stok_date)).filter((Stok.item_id==i.item_id)&
+                                                                   (Stok.wh_id==i.wh_id)&
+                                                                   (Stok.stok_date<i.stok_date)).first()
+        print(lastdata)
+        if lastdata[0] is not None:
+            print('stok gerak')
+            val=int((i.item_qty-lastdata[0])/((i.stok_date-lastdata[1]).days))
+            i.out_yda=val
+            db.session.add(i)
+            db.session.commit()
+    return redirect(url_for('stokhist'))
 
 @app.route('/<id>')
 def dash(id):
