@@ -2,11 +2,11 @@ from flask import render_template,redirect, url_for,request
 from app import app,db,api
 from app.models import Warehouse,Product,Credential,Stok
 from datetime import date
+from werkzeug.utils import secure_filename
 from flask_restful import Resource
 from sqlalchemy import create_engine,func
 import pandas as pd
-import json
-import requests
+import json, requests, os
 
 class apiv1(Resource):
     def post(self):
@@ -24,7 +24,6 @@ class apiv1(Resource):
             prod=Product.query.filter_by(product_id=request.args.get('id')).first()
             print(prod.id)
             prod.product_name=request.args.get('prodname')
-            # if request.args.get('status'):
             prod.product_status=request.args.get('status')
             db.session.add(prod)
             db.session.commit()
@@ -35,10 +34,22 @@ class apiv1(Resource):
             wh=request.args.get('wh')
             print(id)
             print(qty)
-            newdata=Stok(item_id=id,item_qty=qty,stok_date=date.today(),wh_id=wh)
-            db.session.add(newdata)
-            db.session.commit()
-            return {'status':'added stok'}
+            lastdata=db.session.query(Stok).filter((Stok.item_id==id)&
+                                                    (Stok.wh_id==wh)&
+                                                    (Stok.stok_date<date.today())).order_by(Stok.stok_date.desc()).first()
+            if lastdata is not None:
+                # print(type(qty))
+                # print(type(lastdata.item_qty))
+                val=int((int(qty)-lastdata.item_qty)/((date.today()-lastdata.stok_date).days))
+                newdata=Stok(item_id=id,item_qty=qty,out_yda=val,stok_date=date.today(),wh_id=wh)
+                db.session.add(newdata)
+                db.session.commit()
+                return {'status':'added stok'}
+            else:
+                newdata=Stok(item_id=id,item_qty=qty,stok_date=date.today(),wh_id=wh)
+                db.session.add(newdata)
+                db.session.commit()
+                return {'status':'added stok'}
     def get(self):
         if request.args.get('data')=="product":
             engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -95,14 +106,10 @@ def ydasales():
         print(i.item_id)
         print(i.wh_id)
         print(i.stok_date)
-        # lastdata=db.session.query(Stok.item_qty,func.max(Stok.stok_date)).filter((Stok.item_id==i.item_id)&
-        #                                                            (Stok.wh_id==i.wh_id)&
-        #                                                            (Stok.stok_date<i.stok_date)).first()
         lastdata=db.session.query(Stok).filter((Stok.item_id==i.item_id)&
                                                (Stok.wh_id==i.wh_id)&
                                                (Stok.stok_date<i.stok_date)).order_by(Stok.stok_date.desc()).first()
 
-        
         if lastdata is not None:
             print(lastdata.stok_date)
             print(lastdata.item_qty)
@@ -127,12 +134,6 @@ def dash(id):
     name=request.args.get('name')
     wh=[x.wh_id for x in df]
     whnew=list(set(wh))
-    # x=[x.stok_date.strftime('%Y/%m/%d') for x in df]
-    # xnew=list(set(x))
-    # xnew.sort()
-    # print(whnew)
-    # print([{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew])
-    # y=[{'label':wh,'data':[x.item_qty for x in df if x.wh_id==wh]} for wh in whnew]
     p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty} for i in df if i.wh_id==wh]} for wh in whnew]
     print(p2)
     return render_template('dash.html',p2=p2,name=name)
@@ -141,7 +142,6 @@ def dash(id):
 def stokhist():
     print(date.today())
     df=Stok.query.all()
-    # df=Stok.query.filter((Stok.stok_date==date.today())&(Stok.item_qty==0)).all()
     return render_template('stokhist.html',df=df,title="Tokopedia Stock History")
 
 @app.route('/oostoday')
@@ -184,10 +184,28 @@ def delwh(id):
 def prod():
     df=Product.query.all()
     if request.method=='POST':
-        NewProd=Product(product_id=request.form['InpProdId'],product_status="Active")
-        db.session.add(NewProd)
-        db.session.commit()
-        return redirect(url_for('prod'))
+        print('wkwkw')
+        if request.form['action']=='Upload':
+            f = request.files['InpProdIdF']
+            filedir=os.path.join(app.config['UPLOAD_FOLDER'],secure_filename(f.filename))
+            print(filedir)
+            f.save(filedir)
+            df=pd.read_excel(filedir,engine='openpyxl')
+            for i in df['prod_id'].unique():
+                print(i)
+                exist=Product.query.filter_by(product_id=str(i)).all()
+                if exist:
+                    print('sdh ada di db')
+                else:
+                    NewProd=Product(product_id=str(i),product_status="Active")
+                    db.session.add(NewProd)
+                    db.session.commit()
+            return redirect(url_for('prod'))
+        else:
+            NewProd=Product(product_id=request.form['InpProdId'],product_status="Active")
+            db.session.add(NewProd)
+            db.session.commit()
+            return redirect(url_for('prod'))
     else:        
         return render_template('product.html',df=df)
     

@@ -3,3 +3,4 @@ __pycache__/
 *sqlite
 migrations/ 
 config.py
+app/static/upload/*xlsx

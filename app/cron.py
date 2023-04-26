@@ -11,11 +11,13 @@ def getcred():
 def getprod():
     prod = requests.get("{0}/apiv1?data=product".format(config.envurl))
     prodlist=[int(x['product_id']) for x in prod.json()]
+    # prodlist=[x['product_id'] for x in prod.json()]
     return(prodlist)
 
 def getnoneprod():
     prod = requests.get("{0}/apiv1?data=product".format(config.envurl))
-    prodlist=[int(x['product_id']) for x in prod.json() if x['product_name']==None]
+    # prodlist=[int(x['product_id']) for x in prod.json() if x['product_name']==None]
+    prodlist=[x['product_id'] for x in prod.json() if x['product_name']==None]
     return(prodlist)
 
 def getwh():
@@ -107,7 +109,8 @@ for itemid in getprod():
     for i in prodinfo['data'][0]['warehouses']:
         if i['warehouseID'] in wh:
             if 'value' in i['stock']:
-                addstok(prodid=itemid,stokval=i['stock']['value'],whid=i['warehouseID'])
+                cur_qty=i['stock']['value']
+                addstok(prodid=itemid,stokval=cur_qty,whid=i['warehouseID'])
                 print('{0}:{1}'.format(i['warehouseID'],i['stock']['value']))
             else:
                 addstok(prodid=itemid,stokval=0,whid=i['warehouseID'])

@@ -6,9 +6,18 @@
         <h2>Tokopedia Product</h2>
     </div>
     <div class="col hside"> 
-        <button type="button" class="btn btn-primary hside" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <!-- <button type="button" class="btn btn-primary hside" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Add Product
-        </button>
+        </button> -->
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            +
+        </a>
+        
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" role="button" class="btn btn-primary hside" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Single</a></li>
+            <li><a class="dropdown-item" role="button" class="btn btn-primary hside" data-bs-toggle="modal" data-bs-target="#modalBulk">Bulk Upload </a></li>
+            <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+        </ul>        
     </div>
 </div>
 <br>
@@ -35,6 +44,7 @@
                 {% else %}
                 <a href="{{url_for('delprod',id=i.id)}}">delete</a>
                 {% endif %}
+                <a href="{{url_for('delprod',id=i.id)}}">delete</a>
             </td>
         </tr>
         {% endfor %}
@@ -56,6 +66,20 @@
     </div>
   </div>
   
+  <div class="modal fade" id="modalBulk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+            <form method='POST' enctype='multipart/form-data'>
+                <label for="InpWhId" class="form-label">File Product ID</label>
+                <input class="form-control" type="file" placeholder="" aria-label="default input example" accept=".xlsx" id="InpProdIdF" name="InpProdIdF" required>
+                <input type="submit" name="action" value="Upload" class="btn btn-primary mb-3">
+                <button type="button" class="btn btn-secondary mb-3" data-bs-dismiss="modal">Close</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 {% endblock %}
