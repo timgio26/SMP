@@ -71,7 +71,10 @@
       <div class="modal-content">
         <div class="modal-body">
             <form method='POST' enctype='multipart/form-data'>
-                <label for="InpWhId" class="form-label">File Product ID</label>
+                <label for="InpWhId" class="form-label mdlhead">File Product ID 
+                    <a href="{{url_for('download')}}" role="button" class="btn btn-light plain">Template <img src="{{url_for('static', filename='download.png')}}" alt="" style="height: 20px;">
+                    </a>
+                </label>
                 <input class="form-control" type="file" placeholder="" aria-label="default input example" accept=".xlsx" id="InpProdIdF" name="InpProdIdF" required>
                 <input type="submit" name="action" value="Upload" class="btn btn-primary mb-3">
                 <button type="button" class="btn btn-secondary mb-3" data-bs-dismiss="modal">Close</button>

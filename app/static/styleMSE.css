@@ -22,3 +22,13 @@
     text-align: end;
     margin: 0px !important;
 }
+
+.plain{
+    margin: 0px !important;
+    padding: 2px !important;
+}
+
+.mdlhead{
+    display: flex;
+    justify-content: space-between;
+}

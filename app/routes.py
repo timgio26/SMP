@@ -1,4 +1,4 @@
-from flask import render_template,redirect, url_for,request
+from flask import render_template,redirect, url_for,request,send_file
 from app import app,db,api
 from app.models import Warehouse,Product,Credential,Stok
 from datetime import date
@@ -97,6 +97,11 @@ api.add_resource(apiv1,'/apiv1')
 @app.route('/')
 def index():
     return render_template('home.html')
+
+@app.route('/download',methods=['GET', 'POST'])
+def download():
+    return send_file('static/template_prodId.xlsx')
+    
 
 @app.route('/updateydasales')
 def ydasales():
