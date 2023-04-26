@@ -39,12 +39,12 @@
             <td>{{i.product_name}}</td>
             <td>{{i.product_status}}</td>
             <td>
-                {% if i.product_status=='Active' %}
+                {% if i.product_status=='Active' and i.product_name %}
                 <a href="{{url_for('dash',id=i.product_id,name=i.product_name)}}">chart</a>
                 {% else %}
                 <a href="{{url_for('delprod',id=i.id)}}">delete</a>
                 {% endif %}
-                <a href="{{url_for('delprod',id=i.id)}}">delete</a>
+                <!-- <a href="{{url_for('delprod',id=i.id)}}">delete</a> -->
             </td>
         </tr>
         {% endfor %}
