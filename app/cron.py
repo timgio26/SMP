@@ -22,7 +22,7 @@ def getnoneprod():
 
 def getwh():
     wh = requests.get("{}/apiv1".format(config.envurl))
-    whlist=[int(x['warehouse_id']) for x in wh.json()]
+    whlist=[x['warehouse_id'] for x in wh.json()]
     return(whlist)
 
 def addstok(prodid,stokval,whid):
