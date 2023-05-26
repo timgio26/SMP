@@ -107,7 +107,7 @@ for itemid in getprod():
         cred=getcred()
         prodinfo=getprodinfo(cred['appId'],itemid,cred['clientBearer'])
     for i in prodinfo['data'][0]['warehouses']:
-        if i['warehouseID'] in wh:
+        if str(i['warehouseID']) in wh:
             if 'value' in i['stock']:
                 cur_qty=i['stock']['value']
                 addstok(prodid=itemid,stokval=cur_qty,whid=i['warehouseID'])
