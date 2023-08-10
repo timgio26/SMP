@@ -1,4 +1,4 @@
-from flask import render_template,redirect, url_for,request,send_file
+from flask import render_template,redirect, url_for,request,send_file,make_response
 from app import app,db,api
 from app.models import Warehouse,Product,Credential,Stok
 from datetime import date
@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask_restful import Resource
 from sqlalchemy import create_engine,func
 import pandas as pd
-import json, requests, os,plotly
+import json, requests, os,plotly,io
 import plotly.express as px
 
 class apiv1(Resource):
@@ -103,6 +103,28 @@ def index():
 def download():
     return send_file('static/template_prodId.xlsx')
     
+@app.route('/export/<id>',methods=['GET', 'POST'])
+def export(id):
+    item=Product.query.filter_by(product_id=id).first()
+    prodname=item.product_name
+    print(prodname)
+    wh=Warehouse.query.all()
+    df=pd.read_sql_table('stok', app.config['SQLALCHEMY_DATABASE_URI'])
+    df=df[df['item_id']==id]
+    df['Product Name']=prodname
+    for i in wh:
+        df.loc[df['wh_id']==i.warehouse_id,'Warehouse']=i.warehouse_name
+    df=df[['item_id','Product Name','wh_id','Warehouse','stok_date','item_qty','out_yda']]
+    out = io.BytesIO()
+    writer = pd.ExcelWriter(out, engine='xlsxwriter')
+    df.to_excel(excel_writer=writer, index=False, sheet_name='Sheet1')
+    writer.save()
+    # writer.close()
+    resp = make_response(out.getvalue())
+    resp.headers["Content-Disposition"] = f"attachment; filename=export_{id}.xlsx"
+    resp.headers["Content-type"] = "application/x-xls"
+    return resp
+    
 
 @app.route('/updateydasales')
 def ydasales():
@@ -139,12 +161,16 @@ def dash(id):
     # df=Stok.query.filter_by(item_id=id).all()
     name=request.args.get('name')
     # wh=[x.wh_id for x in df]
+    wh=Warehouse.query.all()
+
     # whnew=list(set(wh))
     # p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty} for i in df if i.wh_id==wh]} for wh in whnew]
     df=pd.read_sql_table('stok', app.config['SQLALCHEMY_DATABASE_URI'])
     df=df[df['item_id']==id]
-    fig = px.line(df, x='stok_date', y='item_qty',color='wh_id',
-                  labels={'stok_date':'Tanggal','item_qty':'Qty (pcs)','wh_id':'Warehouse'})
+    for i in wh:
+        df.loc[df['wh_id']==i.warehouse_id,'Warehouse']=i.warehouse_name
+    fig = px.line(df, x='stok_date', y='item_qty',color='Warehouse',
+                  labels={'stok_date':'Tanggal','item_qty':'Qty (pcs)'})
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     print(df)
     return render_template('dash.html',name=name,graphJSON=graphJSON)

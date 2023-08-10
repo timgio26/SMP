@@ -41,6 +41,7 @@
             <td>
                 {% if i.product_status=='Active' and i.product_name %}
                 <a href="{{url_for('dash',id=i.product_id,name=i.product_name)}}">chart</a>
+                <a href="{{url_for('export',id=i.product_id)}}">export</a>
                 {% else %}
                 <a href="{{url_for('delprod',id=i.id)}}">delete</a>
                 {% endif %}
