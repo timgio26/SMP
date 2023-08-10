@@ -6,7 +6,8 @@ from werkzeug.utils import secure_filename
 from flask_restful import Resource
 from sqlalchemy import create_engine,func
 import pandas as pd
-import json, requests, os
+import json, requests, os,plotly
+import plotly.express as px
 
 class apiv1(Resource):
     def post(self):
@@ -135,13 +136,18 @@ def resetydasales():
 
 @app.route('/<id>')
 def dash(id):
-    df=Stok.query.filter_by(item_id=id).all()
+    # df=Stok.query.filter_by(item_id=id).all()
     name=request.args.get('name')
-    wh=[x.wh_id for x in df]
-    whnew=list(set(wh))
-    p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty} for i in df if i.wh_id==wh]} for wh in whnew]
-    # print(p2)
-    return render_template('dash.html',p2=p2,name=name)
+    # wh=[x.wh_id for x in df]
+    # whnew=list(set(wh))
+    # p2=[{'label':requests.get("{0}/apiv1?id={1}".format(app.config['ENV_URL'],wh)).json(),'data':[{"x":i.stok_date.strftime('%Y/%m/%d') ,"y":i.item_qty} for i in df if i.wh_id==wh]} for wh in whnew]
+    df=pd.read_sql_table('stok', app.config['SQLALCHEMY_DATABASE_URI'])
+    df=df[df['item_id']==id]
+    fig = px.line(df, x='stok_date', y='item_qty',color='wh_id',
+                  labels={'stok_date':'Tanggal','item_qty':'Qty (pcs)','wh_id':'Warehouse'})
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    print(df)
+    return render_template('dash.html',name=name,graphJSON=graphJSON)
 
 @app.route('/stokhist')
 def stokhist():
