@@ -1,6 +1,6 @@
 from flask import render_template,redirect, url_for,request,send_file,make_response
 from app import app,db,api
-from app.models import Warehouse,Product,Credential,Stok
+from app.models import Warehouse,Product,Credential,Stok,RedeemNP
 from datetime import date
 from werkzeug.utils import secure_filename
 from flask_restful import Resource
@@ -29,6 +29,11 @@ class apiv1(Resource):
             db.session.add(prod)
             db.session.commit()
             return {'status':'prod name added'}
+        elif request.args.get('data')=="redeem":
+            newreq=RedeemNP(nmuserid="tes_uid",redeemitem="tes_item",reqdate=date.today())
+            db.session.add(newreq)
+            db.session.commit()
+            return {'status':'new redeem added'}
         else:
             id=request.args.get('id')
             qty=request.args.get('qty')
@@ -276,3 +281,15 @@ def cred():
             return redirect(url_for('cred'))
     else:        
         return render_template('credential.html',df=df)
+    
+@app.route('/redeemnp', methods=['GET', 'POST'])
+def redeemnp():
+    df=RedeemNP.query.all()
+    return render_template('redeem.html',df=df)
+
+# @app.route('/addredeem',methods=['POST'])
+# def addredeem():
+#     newreq=RedeemNP(nmuserid="tes_uid",redeemitem="tes_item",reqdate=date.today())
+#     db.session.add(newreq)
+#     db.session.commit()
+#     return ("add redeem")

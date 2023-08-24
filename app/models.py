@@ -31,3 +31,10 @@ class Stok(db.Model):
     stok_date = db.Column(db.Date)
     wh_id = db.Column(db.String(25))
     out_yda=db.Column(db.Integer)
+
+class RedeemNP(db.Model):
+    __tablename__ = 'redeemnp'
+    id = db.Column(db.Integer, primary_key=True)
+    nmuserid = db.Column(db.String(10))
+    redeemitem = db.Column(db.String(50))
+    reqdate = db.Column(db.Date)
