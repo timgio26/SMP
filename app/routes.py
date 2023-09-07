@@ -177,7 +177,7 @@ def dash(id):
     fig = px.line(df, x='stok_date', y='item_qty',color='Warehouse',
                   labels={'stok_date':'Tanggal','item_qty':'Qty (pcs)'})
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    print(df)
+    # print(df)
     return render_template('dash.html',name=name,graphJSON=graphJSON)
 
 @app.route('/stokhist')
