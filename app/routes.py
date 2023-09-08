@@ -30,7 +30,9 @@ class apiv1(Resource):
             db.session.commit()
             return {'status':'prod name added'}
         elif request.args.get('data')=="redeem":
-            newreq=RedeemNP(nmuserid="tes_uid",redeemitem="tes_item",reqdate=date.today())
+            uid=request.args.get('uid')
+            reditem=request.args.get('reditem')
+            newreq=RedeemNP(nmuserid=uid,redeemitem=reditem,reqdate=date.today())
             db.session.add(newreq)
             db.session.commit()
             return {'status':'new redeem added'}
