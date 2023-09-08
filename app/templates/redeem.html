@@ -9,6 +9,7 @@
             <th>Cust ID</th>
             <th>Redeem Item</th>
             <th>Req Date</th>
+            <th>Status</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -19,8 +20,15 @@
             <td>{{i.nmuserid}}</td>
             <td>{{i.redeemitem}}</td>
             <td>{{i.reqdate}}</td>
+            <td>{{i.reqstat}}</td>
             <td>
-                <a href="#">delete</a>
+                {% if i.reqstat == 'New' %}
+                <a href="{{url_for('processredeemnp',id=i.id)}}">process</a>
+                {% elif i.reqstat == 'Process' %}
+                <a href="{{url_for('doneredeemnp',id=i.id)}}">done</a>
+                {% else %}
+                {% endif %}
+                <a href="{{url_for('delredeemnp',id=i.id)}}">delete</a>
             </td>
         </tr>
         {% endfor %}

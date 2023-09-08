@@ -32,7 +32,7 @@ class apiv1(Resource):
         elif request.args.get('data')=="redeem":
             uid=request.args.get('uid')
             reditem=request.args.get('reditem')
-            newreq=RedeemNP(nmuserid=uid,redeemitem=reditem,reqdate=date.today())
+            newreq=RedeemNP(nmuserid=uid,redeemitem=reditem,reqdate=date.today(),reqstat='New')
             db.session.add(newreq)
             db.session.commit()
             return {'status':'new redeem added'}
@@ -79,6 +79,13 @@ class apiv1(Resource):
         elif (request.args.get('data')=="stokhist"):
             engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
             df = pd.read_sql_query("SELECT * FROM stok", con=engine)
+            engine.dispose()
+            df=df.to_json()
+            df=json.loads(df)
+            return(df)
+        elif (request.args.get('data')=="redeem"):
+            engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+            df = pd.read_sql_query("SELECT * FROM redeemnp WHERE nmuserid={} ORDER BY id DESC LIMIT 1".format(request.args.get('uid')), con=engine)
             engine.dispose()
             df=df.to_json()
             df=json.loads(df)
@@ -288,6 +295,29 @@ def cred():
 def redeemnp():
     df=RedeemNP.query.all()
     return render_template('redeem.html',df=df)
+
+@app.route('/delredeemnp/<id>', methods=['GET', 'POST'])
+def delredeemnp(id):
+    reqdel=RedeemNP.query.get(id)
+    db.session.delete(reqdel)
+    db.session.commit()
+    return redirect(url_for('redeemnp'))
+
+@app.route('/processredeemnp/<id>', methods=['GET', 'POST'])
+def processredeemnp(id):
+    reqedit=RedeemNP.query.get(id)
+    reqedit.reqstat="Process"
+    db.session.add(reqedit)
+    db.session.commit()
+    return redirect(url_for('redeemnp'))
+
+@app.route('/doneredeemnp/<id>', methods=['GET', 'POST'])
+def doneredeemnp(id):
+    reqedit=RedeemNP.query.get(id)
+    reqedit.reqstat="Done"
+    db.session.add(reqedit)
+    db.session.commit()
+    return redirect(url_for('redeemnp'))
 
 # @app.route('/addredeem',methods=['POST'])
 # def addredeem():

@@ -38,3 +38,4 @@ class RedeemNP(db.Model):
     nmuserid = db.Column(db.String(10))
     redeemitem = db.Column(db.String(50))
     reqdate = db.Column(db.Date)
+    reqstat= db.Column(db.String(10))
